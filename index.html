@@ -194,6 +194,7 @@
         <ul>
             <li><strong>Date of Exam:</strong> 2 JUNE 2026</li>
             <li><strong>Duration:</strong> 2 Hours (120 Minutes) | 90 Objective Questions</li>
+            <li><strong>Syllabus:</strong> Chapter 1 Biology - The Cell (Fundamental Unit of Life)</li>
             <li><span style="color: var(--danger);">STRICT ANTI-CHEAT:</span> Changing tabs or minimizing the window will instantly cancel your exam!</li>
             <li><strong>Public Transparency:</strong> Everyone's score will be published right on the scoreboard below.</li>
         </ul>
@@ -201,6 +202,7 @@
 
     <div id="start-screen">
         <h1>Class 9 Biology Annual Examination</h1>
+        <p class="subtitle">Topic: Chapter 1 - The Cell | Difficulty: Moderate</p>
         <div class="login-box">
             <label for="student-name"><strong>Enter Student Full Name to Begin:</strong></label>
             <input type="text" id="student-name" placeholder="Type your full name here..." required>
@@ -241,27 +243,33 @@
             <tbody id="scoreboard-rows">
                 </tbody>
         </table>
-        <button onclick="clearScores()" style="margin-top:15px; background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem;">[Reset Leaderboard Data]</button>
     </div>
 </div>
 
 <script>
-    // Sample Pool of Moderate Class 9 Biology Questions
+    // Chapter 1: The Cell - Moderate Difficulty Question Bank
     const baseQuestions = [
         { q: "Which organelle is known as the powerhouse of the cell?", o: ["Lysosome", "Mitochondria", "Golgi Apparatus", "Ribosome"], a: 1 },
-        { q: "Which tissue provides flexibility to plants?", o: ["Sclerenchyma", "Parenchyma", "Collenchyma", "Xylem"], a: 2 },
-        { q: "The cell wall of fungi is composed of a complex sugar called:", o: ["Cellulose", "Chitin", "Pectin", "Lignin"], a: 1 },
-        { q: "Which of the following is a complex permanent tissue?", o: ["Xylem", "Apical Meristem", "Parenchyma", "Sclerenchyma"], a: 0 },
-        { q: "Which cell organelle is responsible for packaging materials?", o: ["Mitochondria", "Golgi Apparatus", "Lysosome", "Ribosome"], a: 1 }
+        { q: "Who discovered the living cell for the first time?", o: ["Robert Hooke", "Leeuwenhoek", "Purkinje", "Robert Brown"], a: 1 },
+        { q: "The cell wall of plants is mainly composed of:", o: ["Chitin", "Protein", "Cellulose", "Lipids"], a: 2 },
+        { q: "Which organelle is called the 'suicide bag' of a cell?", o: ["Lysosome", "Centrosome", "Ribosome", "Vacuole"], a: 0 },
+        { q: "The process by which water moves into a cell placed in a hypotonic solution is:", o: ["Exosmosis", "Endosmosis", "Plasmolysis", "Diffusion"], a: 1 },
+        { q: "Which organelle is responsible for synthesizing proteins?", o: ["Smooth ER", "Rough ER / Ribosome", "Golgi body", "Plastids"], a: 1 },
+        { q: "Who proposed the Cell Theory?", o: ["Watson and Crick", "Schleiden and Schwann", "Mendel", "Robert Hooke"], a: 1 },
+        { q: "The nucleoid is found in which type of organism?", o: ["Eukaryotes", "Prokaryotes", "Plants", "Animals"], a: 1 },
+        { q: "Which organelle is involved in the formation of lysosomes?", o: ["Mitochondria", "Golgi Apparatus", "Endoplasmic Reticulum", "Plastids"], a: 1 },
+        { q: "Shrinkage of protoplasm in a hypertonic medium is known as:", o: ["Osmosis", "Plasmolysis", "Dehydration", "Diffusion"], a: 1 },
+        { q: "The flexible lipid bilayer membrane that encloses the cell is the:", o: ["Cell Wall", "Plasma Membrane", "Nuclear Membrane", "Tonoplast"], a: 1 },
+        { q: "Which plastid contains green pigment for photosynthesis?", o: ["Leucoplast", "Chromoplast", "Chloroplast", "Amyloplast"], a: 2 }
     ];
 
-    // Generate exactly 90 questions sequentially
+    // Build exactly 90 questions using variations of Chapter 1 concepts
     const questions = [];
     for (let i = 0; i < 90; i++) {
         const base = baseQuestions[i % baseQuestions.length];
         questions.push({
             id: i + 1,
-            q: `Q${i + 1}: ${base.q}`,
+            q: `Q${i + 1}: [Cell Theory & Organelles] ${base.q}`,
             o: [...base.o],
             a: base.a
         });
@@ -272,7 +280,6 @@
     let examActive = false;
     let currentStudent = "";
 
-    // Show previous marks on load
     window.onload = function() {
         displayGlobalScores();
     };
@@ -304,7 +311,7 @@
 
     function renderQuestions() {
         const container = document.getElementById('questions-container');
-        container.innerHTML = ""; // Clear out previous placeholders
+        container.innerHTML = "";
         
         let htmlContent = "";
         questions.forEach((item, index) => {
@@ -358,53 +365,5 @@
         
         document.getElementById('exam-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('final-score').innerText = `${score} / 90`;
-        
-        displayGlobalScores();
-    }
-
-    function cancelExam() {
-        examActive = false;
-        clearInterval(timerInterval);
-        alert("CHEATING DETECTED! You left the test tab. Your exam is cancelled with 0 marks.");
-        submitExam('Disqualified (Tab Switched)');
-    }
-
-    function saveScoreToPublicRecord(name, score, status) {
-        let existingRecords = JSON.parse(localStorage.getItem('bioExamScores')) || [];
-        existingRecords.push({ name: name, score: score, status: status });
-        localStorage.setItem('bioExamScores', JSON.stringify(existingRecords));
-    }
-
-    function displayGlobalScores() {
-        const tbody = document.getElementById('scoreboard-rows');
-        tbody.innerHTML = "";
-        let records = JSON.parse(localStorage.getItem('bioExamScores')) || [];
-        
-        if(records.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">No exam records submitted yet.</td></tr>`;
-            return;
-        }
-
-        records.forEach(r => {
-            let statusStyle = r.status === 'Completed' ? 'status-pass' : 'status-fail';
-            tbody.innerHTML += `
-                <tr>
-                    <td><strong>${r.name}</strong></td>
-                    <td>${r.score}</td>
-                    <td>90</td>
-                    <td class="${statusStyle}">${r.status}</td>
-                </tr>
-            `;
-        });
-    }
-
-    function clearScores() {
-        if(confirm("Are you sure you want to clear all public records?")) {
-            localStorage.removeItem('bioExamScores');
-            displayGlobalScores();
-        }
-    }
-</script>
-</body>
-</html>
+        document.getElementById('final-score').innerText = `${score} /
+    
