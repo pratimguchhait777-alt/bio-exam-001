@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 9 Biology Online Examination</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --danger: #d32f2f;
+            --dark: #333;
+            --light: #f4f6f9;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .notice-board {
+            background-color: #ffeedd;
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .notice-board h3 {
+            margin-top: 0;
+            color: #e65100;
+        }
+
+        .notice-board ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .notice-board li {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .login-box {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .exam-meta {
+            display: flex;
+            justify-content: space-between;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        #timer {
+            color: var(--danger);
+            font-size: 1.1rem;
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options-route {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover {
+            background: #f0f0f0;
+        }
+
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            background: #1b5e20;
+        }
+
+        .scoreboard-section {
+            margin-top: 40px;
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .score-table th, .score-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .score-table th {
+            background-color: #2e7d32;
+            color: white;
+        }
+
+        .score-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .status-pass { color: green; font-weight: bold; }
+        .status-fail { color: red; font-weight: bold; }
+
+        .hidden { display: none !important; }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="notice-board">
+        <h3>⚠️ CRITICAL EXAMINATION RULES</h3>
+        <ul>
+            <li><strong>Date of Exam:</strong> 2 JUNE 2026</li>
+            <li><strong>Duration:</strong> 2 Hours (120 Minutes) | 90 Objective Questions</li>
+            <li><span style="color: var(--danger);">STRICT ANTI-CHEAT:</span> Changing tabs or minimizing the window will instantly cancel your exam!</li>
+            <li><strong>Public Transparency:</strong> Everyone's score will be published right on the scoreboard below.</li>
+        </ul>
+    </div>
+
+    <div id="start-screen">
+        <h1>Class 9 Biology Annual Examination</h1>
+        <div class="login-box">
+            <label for="student-name"><strong>Enter Student Full Name to Begin:</strong></label>
+            <input type="text" id="student-name" placeholder="Type your full name here..." required>
+        </div>
+        <button class="btn" onclick="startExam()">I Acknowledge the Rules & Start Exam</button>
+    </div>
+
+    <div id="exam-screen" class="hidden">
+        <div class="exam-meta">
+            <div>Student: <span id="display-student-name" style="color:var(--primary)">-</span></div>
+            <div id="timer">Time Remaining: 02:00:00</div>
+        </div>
+        <form id="quiz-form" onsubmit="event.preventDefault();">
+            <div id="questions-container"></div>
+            <button type="button" class="btn" onclick="submitExam('Completed')">Submit Examination</button>
+        </form>
+    </div>
+
+    <div id="result-screen" class="hidden" style="text-align: center; padding: 20px;">
+        <h1>Exam Finished!</h1>
+        <p>Your responses have been logged publicly. Your Score:</p>
+        <div class="score-display" id="final-score">0 / 90</div>
+        <button class="btn" style="background:#555;" onclick="window.location.reload()">Next Student Login</button>
+    </div>
+
+    <div class="scoreboard-section">
+        <h2>📊 Global Scoreboard (All Student Marks)</h2>
+        <p style="font-size: 0.9rem; color:#666;">Updates in real-time as students finish or get disqualified.</p>
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Marks Obtained</th>
+                    <th>Total Marks</th>
+                    <th>Exam Status</th>
+                </tr>
+            </thead>
+            <tbody id="scoreboard-rows">
+                </tbody>
+        </table>
+        <button onclick="clearScores()" style="margin-top:15px; background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem;">[Reset Leaderboard Data]</button>
+    </div>
+</div>
+
+<script>
+    // Sample Pool of Moderate Class 9 Biology Questions
+    const baseQuestions = [
+        { q: "Which organelle is known as the powerhouse of the cell?", o: ["Lysosome", "Mitochondria", "Golgi Apparatus", "Ribosome"], a: 1 },
+        { q: "Which tissue provides flexibility to plants?", o: ["Sclerenchyma", "Parenchyma", "Collenchyma", "Xylem"], a: 2 },
+        { q: "The cell wall of fungi is composed of a complex sugar called:", o: ["Cellulose", "Chitin", "Pectin", "Lignin"], a: 1 },
+        { q: "Which of the following is a complex permanent tissue?", o: ["Xylem", "Apical Meristem", "Parenchyma", "Sclerenchyma"], a: 0 },
+        { q: "Which cell organelle is responsible for packaging materials?", o: ["Mitochondria", "Golgi Apparatus", "Lysosome", "Ribosome"], a: 1 }
+    ];
+
+    // Generate exactly 90 questions sequentially
+    const questions = [];
+    for (let i = 0; i < 90; i++) {
+        const base = baseQuestions[i % baseQuestions.length];
+        questions.push({
+            id: i + 1,
+            q: `Q${i + 1}: ${base.q}`,
+            o: [...base.o],
+            a: base.a
+        });
+    }
+
+    let totalSeconds = 2 * 60 * 60; // 2 Hours
+    let timerInterval;
+    let examActive = false;
+    let currentStudent = "";
+
+    // Show previous marks on load
+    window.onload = function() {
+        displayGlobalScores();
+    };
+
+    // Strict Anti-Cheat Triggers
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden && examActive) cancelExam();
+    });
+    window.addEventListener("blur", function() {
+        if (examActive) cancelExam();
+    });
+
+    function startExam() {
+        const nameInput = document.getElementById('student-name').value.trim();
+        if(!nameInput) {
+            alert("Please enter a student name first!");
+            return;
+        }
+        currentStudent = nameInput;
+        document.getElementById('display-student-name').innerText = currentStudent;
+        
+        examActive = true;
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('exam-screen').classList.remove('hidden');
+        
+        renderQuestions();
+        startTimer();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = ""; // Clear out previous placeholders
+        
+        let htmlContent = "";
+        questions.forEach((item, index) => {
+            let optionsHTML = '';
+            item.o.forEach((opt, oIndex) => {
+                optionsHTML += `
+                    <label class="option-label">
+                        <input type="radio" name="q${index}" value="${oIndex}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            htmlContent += `
+                <div class="question-card">
+                    <div class="question-text">${item.q}</div>
+                    <div class="options-route">${optionsHTML}</div>
+                </div>
+            `;
+        });
+        container.innerHTML = htmlContent;
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if (totalSeconds <= 0) { 
+                submitExam('Completed'); 
+                return; 
+            }
+            totalSeconds--;
+            let hrs = Math.floor(totalSeconds / 3600);
+            let mins = Math.floor((totalSeconds % 3600) / 60);
+            let secs = totalSeconds % 60;
+            document.getElementById('timer').innerText = `Time Remaining: ${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    function submitExam(status) {
+        examActive = false;
+        clearInterval(timerInterval);
+        
+        let score = 0;
+        if(status === 'Completed') {
+            questions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected && parseInt(selected.value) === item.a) score++;
+            });
+        }
+
+        saveScoreToPublicRecord(currentStudent, score, status);
+        
+        document.getElementById('exam-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('final-score').innerText = `${score} / 90`;
+        
+        displayGlobalScores();
+    }
+
+    function cancelExam() {
+        examActive = false;
+        clearInterval(timerInterval);
+        alert("CHEATING DETECTED! You left the test tab. Your exam is cancelled with 0 marks.");
+        submitExam('Disqualified (Tab Switched)');
+    }
+
+    function saveScoreToPublicRecord(name, score, status) {
+        let existingRecords = JSON.parse(localStorage.getItem('bioExamScores')) || [];
+        existingRecords.push({ name: name, score: score, status: status });
+        localStorage.setItem('bioExamScores', JSON.stringify(existingRecords));
+    }
+
+    function displayGlobalScores() {
+        const tbody = document.getElementById('scoreboard-rows');
+        tbody.innerHTML = "";
+        let records = JSON.parse(localStorage.getItem('bioExamScores')) || [];
+        
+        if(records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">No exam records submitted yet.</td></tr>`;
+            return;
+        }
+
+        records.forEach(r => {
+            let statusStyle = r.status === 'Completed' ? 'status-pass' : 'status-fail';
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${r.name}</strong></td>
+                    <td>${r.score}</td>
+                    <td>90</td>
+                    <td class="${statusStyle}">${r.status}</td>
+                </tr>
+            `;
+        });
+    }
+
+    function clearScores() {
+        if(confirm("Are you sure you want to clear all public records?")) {
+            localStorage.removeItem('bioExamScores');
+            displayGlobalScores();
+        }
+    }
+</script>
+</body>
+</html>
