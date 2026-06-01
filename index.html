@@ -247,7 +247,7 @@
 </div>
 
 <script>
-    // Chapter 1: The Cell - Moderate Difficulty Question Bank
+    // Chapter 1: The Cell Question Bank Pool
     const baseQuestions = [
         { q: "Which organelle is known as the powerhouse of the cell?", o: ["Lysosome", "Mitochondria", "Golgi Apparatus", "Ribosome"], a: 1 },
         { q: "Who discovered the living cell for the first time?", o: ["Robert Hooke", "Leeuwenhoek", "Purkinje", "Robert Brown"], a: 1 },
@@ -263,19 +263,19 @@
         { q: "Which plastid contains green pigment for photosynthesis?", o: ["Leucoplast", "Chromoplast", "Chloroplast", "Amyloplast"], a: 2 }
     ];
 
-    // Build exactly 90 questions using variations of Chapter 1 concepts
+    // Build exactly 90 modular questions
     const questions = [];
     for (let i = 0; i < 90; i++) {
         const base = baseQuestions[i % baseQuestions.length];
         questions.push({
             id: i + 1,
-            q: `Q${i + 1}: [Cell Theory & Organelles] ${base.q}`,
+            q: `Q${i + 1}: [Cell Component Topic] ${base.q}`,
             o: [...base.o],
             a: base.a
         });
     }
 
-    let totalSeconds = 2 * 60 * 60; // 2 Hours
+    let totalSeconds = 2 * 60 * 60; 
     let timerInterval;
     let examActive = false;
     let currentStudent = "";
@@ -284,7 +284,7 @@
         displayGlobalScores();
     };
 
-    // Strict Anti-Cheat Triggers
+    // Strict Visibility Monitoring Rules
     document.addEventListener("visibilitychange", function() {
         if (document.hidden && examActive) cancelExam();
     });
@@ -365,5 +365,46 @@
         
         document.getElementById('exam-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('final-score').innerText = `${score} /
-    
+        document.getElementById('final-score').innerText = `${score} / 90`;
+        
+        displayGlobalScores();
+    }
+
+    function cancelExam() {
+        examActive = false;
+        clearInterval(timerInterval);
+        alert("CHEATING DETECTED! You left the test tab. Your exam is cancelled with 0 marks.");
+        submitExam('Disqualified (Tab Switched)');
+    }
+
+    function saveScoreToPublicRecord(name, score, status) {
+        let existingRecords = JSON.parse(localStorage.getItem('bioExamScores')) || [];
+        existingRecords.push({ name: name, score: score, status: status });
+        localStorage.setItem('bioExamScores', JSON.stringify(existingRecords));
+    }
+
+    function displayGlobalScores() {
+        const tbody = document.getElementById('scoreboard-rows');
+        tbody.innerHTML = "";
+        let records = JSON.parse(localStorage.getItem('bioExamScores')) || [];
+        
+        if(records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">No exam records submitted yet.</td></tr>`;
+            return;
+        }
+
+        records.forEach(r => {
+            let statusStyle = r.status === 'Completed' ? 'status-pass' : 'status-fail';
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${r.name}</strong></td>
+                    <td>${r.score}</td>
+                    <td>90</td>
+                    <td class="${statusStyle}">${r.status}</td>
+                </tr>
+            `;
+        });
+    }
+</script>
+</body>
+</html>
